@@ -1,10 +1,9 @@
 package com.academy.taskService.Dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+
+@Data
 public class TaskDTO {
 
     private Long id;
