@@ -24,7 +24,8 @@ public class TaskService {
     private ModelMapper mapper;
 
     public TaskDTO getTaskById(Long id) {
-        Optional<Task> task = taskRepository.findById(id);
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
         TaskDTO taskDto = mapper.map(task, TaskDTO.class);
         return taskDto;
     }
@@ -38,6 +39,7 @@ public class TaskService {
 
     public TaskDTO createTask(TaskDTO taskDto) {
         Task task = mapper.map(taskDto, Task.class);
+        task.setId(null);
         Task savedTask = taskRepository.save(task);
         TaskDTO savedTaskDto = mapper.map(savedTask, TaskDTO.class);
         return savedTaskDto;
@@ -52,13 +54,12 @@ public class TaskService {
     }
 
     public TaskDTO updateTask(Long id, TaskDTO taskDto) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
-        taskRepository.delete(task);
-        Task newTask = mapper.map(taskDto, Task.class);
-        taskRepository.save(newTask);
-
-        return taskDto;
+        Task existingTask = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
+        mapper.map(taskDto, existingTask);
+        existingTask.setId(id); 
+        Task updatedTask = taskRepository.save(existingTask);
+        return mapper.map(updatedTask, TaskDTO.class);
     }
 
 }

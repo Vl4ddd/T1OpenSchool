@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.academy.taskService.Dto.TaskDTO;
 import com.academy.taskService.Service.TaskService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/task")
@@ -50,6 +53,14 @@ public class TaskController {
     private ResponseEntity<TaskDTO> deleteTaskById(@PathVariable("id") Long id) {
         TaskDTO task = taskService.deleteTask(id);
         return ResponseEntity.status(HttpStatus.OK).body(task);
+    }
+
+    @PutMapping("/{id}")
+    private ResponseEntity<TaskDTO> updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskDTO taskDto) {
+        TaskDTO updatedTask = taskService.updateTask(id, taskDto);
+        return ResponseEntity.ok(updatedTask);
     }
 
 }
