@@ -8,6 +8,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.academy.taskService.Aspect.Annotation.ExceptionHandling;
+import com.academy.taskService.Aspect.Annotation.LogTracking;
+import com.academy.taskService.Aspect.Annotation.LogUpdate;
+import com.academy.taskService.Aspect.Annotation.Loggable;
 import com.academy.taskService.Dto.TaskDTO;
 import com.academy.taskService.Entity.Task;
 import com.academy.taskService.Repository.TaskRepository;
@@ -23,6 +27,8 @@ public class TaskService {
     @Autowired
     private ModelMapper mapper;
 
+    @LogTracking
+    @Loggable
     public TaskDTO getTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
@@ -30,6 +36,7 @@ public class TaskService {
         return taskDto;
     }
 
+    @LogTracking
     public List<TaskDTO> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         return tasks.stream()
@@ -45,6 +52,7 @@ public class TaskService {
         return savedTaskDto;
     }
 
+    @ExceptionHandling
     public TaskDTO deleteTask(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
@@ -53,6 +61,7 @@ public class TaskService {
         return deletedTaskDto;
     }
 
+    @LogUpdate
     public TaskDTO updateTask(Long id, TaskDTO taskDto) {
         Task existingTask = taskRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
