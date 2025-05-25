@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.academy.taskService.Aspect.Annotation.ExceptionHandling;
@@ -14,6 +15,7 @@ import com.academy.taskService.Aspect.Annotation.LogUpdate;
 import com.academy.taskService.Aspect.Annotation.Loggable;
 import com.academy.taskService.Dto.TaskDTO;
 import com.academy.taskService.Entity.Task;
+import com.academy.taskService.Kafka.KafkaTaskProducer;
 import com.academy.taskService.Repository.TaskRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -25,7 +27,12 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    private final KafkaTaskProducer kafkaTaskProducer;
+
     private final ModelMapper mapper;
+
+    @Value("${task.kafka.topic.updating}")
+    private String topic;
 
     @LogTracking
     @Loggable
@@ -64,10 +71,11 @@ public class TaskService {
     @LogUpdate
     public TaskDTO updateTask(Long id, TaskDTO taskDto) {
         Task existingTask = taskRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Задача не найдена: " + id));
         mapper.map(taskDto, existingTask);
-        existingTask.setId(id); 
+        existingTask.setId(id);
         Task updatedTask = taskRepository.save(existingTask);
+        kafkaTaskProducer.sendTo(topic, updatedTask);
         return mapper.map(updatedTask, TaskDTO.class);
     }
 
