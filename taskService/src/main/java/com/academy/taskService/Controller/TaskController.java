@@ -18,13 +18,14 @@ import com.academy.taskService.Dto.TaskDTO;
 import com.academy.taskService.Service.TaskService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/task")
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @GetMapping("/{id}")
     private ResponseEntity<TaskDTO> getTask(@PathVariable("id") Long id) {
