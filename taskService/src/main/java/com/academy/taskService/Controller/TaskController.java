@@ -18,18 +18,18 @@ import com.academy.taskService.Dto.TaskDTO;
 import com.academy.taskService.Service.TaskService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/task")
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @GetMapping("/{id}")
-    private ResponseEntity<TaskDTO> getTask(@PathVariable("id") Long id) {
-        TaskDTO task = taskService.getTaskById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(task);
+    private TaskDTO getTask(@PathVariable("id") Long id) {
+        return taskService.getTaskById(id);
     }
 
     @GetMapping
@@ -44,23 +44,20 @@ public class TaskController {
     }
 
     @PostMapping
-    private ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDto) {
-        TaskDTO createdTask = taskService.createTask(taskDto);
-        return ResponseEntity.ok(createdTask);
+    private TaskDTO createTask(@RequestBody TaskDTO taskDto) {
+        return taskService.createTask(taskDto);
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<TaskDTO> deleteTaskById(@PathVariable("id") Long id) {
-        TaskDTO task = taskService.deleteTask(id);
-        return ResponseEntity.status(HttpStatus.OK).body(task);
+    private TaskDTO deleteTaskById(@PathVariable("id") Long id) {
+        return taskService.deleteTask(id);
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<TaskDTO> updateTask(
+    private TaskDTO updateTask(
             @PathVariable Long id,
             @Valid @RequestBody TaskDTO taskDto) {
-        TaskDTO updatedTask = taskService.updateTask(id, taskDto);
-        return ResponseEntity.ok(updatedTask);
+        return taskService.updateTask(id, taskDto);
     }
 
 }

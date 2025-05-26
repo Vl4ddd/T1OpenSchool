@@ -4,7 +4,10 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +33,9 @@ public class Task {
 
     private String description;
 
-    // Пока оставлю Long'ом
+    @Enumerated(EnumType.STRING) 
+    private TaskStatus status;
+
     private Long userId;
 
     @CreationTimestamp
